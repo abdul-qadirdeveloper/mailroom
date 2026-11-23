@@ -4,29 +4,32 @@ Everything an AI coding agent (Claude Code, Codex, Cursor, and others) needs to 
 
 ## What this is
 
-Mailroom is a small Python tool for a newsletter. It is a learning project: it grows one step at a time, and each step brings in exactly one new idea, only when the project needs it. The planned steps are:
+Mailroom is a command-line tool for one newsletter: **First Alpha Launch**. It reads the subscribers, checks an issue, and sends it to a practice mail server.
 
-1. Count subscribers.
+It grows one step at a time, and each step brings in exactly one new idea, only when the project needs it. The planned steps are:
+
+1. Read the subscribers (and count them).
 2. Check an issue before it goes out.
-3. Send the issue to a practice mail server (a local test SMTP server, never a real one).
+3. Send the issue to a practice mail server.
 4. Move Mailroom into the user's existing Email Studio, where its emails are checked with code.
 
 Current state: the project is scaffolded only. `main()` prints a greeting and one test checks it. Step 1 has not started.
 
-## How to work here
+## Rules
 
+- Use uv for everything: running, testing, adding packages. Never call `python`, `pip` or `pytest` directly.
+- Never use a real person's email address. Use `@example.com` addresses for subscribers and test data, and `@resend.dev` addresses for practice sends.
+- Commit and push after every step.
 - Keep changes scoped to the current step. Don't add dependencies, frameworks, or abstractions that a later step hasn't asked for yet.
-- When a step introduces a new idea, say what it is and why the project needs it now.
-- Never send email to a real mail server or real addresses. Step 3 uses a local practice server only.
 - Make every change directly in the user's laptop folder `D:\Claude\FDE102\mailroom`.
 
-## Learning rules
+## How I learn
 
-The user is learning programming fundamentals by building this project, following Chapter 13 of the Agent Factory course: https://agentfactory.panaversity.org/building-ai-workers/programming-fundamentals/
+- I am new to Python. I have completed up to **13.7** of https://agentfactory.panaversity.org/building-ai-workers/programming-fundamentals/ (update this number as I move on).
+- Write only with what I have learned. If something new would really help, stop and tell me its name in one line. I decide.
+- When the code uses something new, show me that piece first and ask me to predict what it does. Stay quiet while I guess. Then run it. Explain a line only when I ask.
 
-**Current lesson: 13.7 (Lists and dictionaries).** Update this line when the user moves on; the next lesson is 13.8 (Text from a file).
-
-### Concepts the user has learned (lessons 13.1 to 13.7)
+### What I have learned (lessons 13.1 to 13.7)
 
 - 13.1: values, strings, lists with positions from 0, variables, `print`, predicting before running.
 - 13.2: the workbench: tests, the type checker (Pyright, strict mode), linters (ruff), `uv run python file.py`, `uv run pyright`; Git basics (status, diff, log, add, commit, switch -c).
@@ -36,23 +39,11 @@ The user is learning programming fundamentals by building this project, followin
 - 13.6: `def`, parameters with type labels, return types (`-> int`, `-> str`), `return`, pure functions, `assert` with a message.
 - 13.7: lists and dictionaries (`dict[str, str]`), keys and values, records, `KeyError`, `.get(key, default)`, `IndexError`, `sorted()` with `key=` and `reverse=True`, CSV rows as records.
 
-Not covered yet (each needs teaching before use): reading files (13.8), dates (13.9), reading errors and `try` / `except` (13.10), tests-first with named test functions and pytest (13.11), `import` of modules and the standard library, `-> None`, `break` / `continue`, default parameter values, docstrings, classes and objects (Chapter 14), dataclasses.
-
-### Rules
-
-- Use only the concepts listed above, so the user can read every line.
-- Before using any new concept, teach it first with **PRIMM-AI+**, the course's method, and only use it in Mailroom once the user has worked through it:
-  1. **Predict**: show a small example and ask the user what it will do. Don't run it yet, and don't hint.
-  2. **Run**: run it (with permission) and show the real output.
-  3. **Investigate**: compare the prediction with the output; explain a line when the user asks why.
-  4. **Modify**: the user changes one thing, predicts again, runs again; make the edit they describe.
-  5. **Make**: the user specifies their own version; write code against that spec, and the user checks it with a run or a test.
-- Predict before you run, every time. A run or a test decides.
-- On every change, run the tests, the type checker in strict mode, and any linter the project has.
+Not learned yet, so each one is "something new": reading files (13.8), dates (13.9), `try` / `except` (13.10), named test functions and pytest (13.11), `import`, `-> None`, `break` / `continue`, default parameter values, docstrings, classes and objects, dataclasses. The starter code already uses `-> None`, `import` and a pytest test function; treat them as new the first time they matter.
 
 ## Commands
 
-The project uses [uv](https://docs.astral.sh/uv/) and Python 3.14 (pinned in `.python-version`). Always go through `uv run` rather than calling `python` or `pytest` directly.
+The project uses [uv](https://docs.astral.sh/uv/) and Python 3.14 (pinned in `.python-version`).
 
 ```bash
 uv sync                                   # create .venv and install dependencies
@@ -63,7 +54,7 @@ uv add <pkg>                              # add a runtime dependency
 uv add --dev <pkg>                        # add a dev-only dependency
 ```
 
-No linter or formatter is configured yet.
+No type checker, linter or formatter is configured yet.
 
 ## Layout
 
@@ -75,4 +66,4 @@ No linter or formatter is configured yet.
 ## Where the code lives
 
 - The user's laptop (Windows): `D:\Claude\FDE102\mailroom`, next to `D:\Claude\FDE102\my-email-studio` (the Email Studio for step 4).
-- There is no Git repository yet.
+- GitHub (public): https://github.com/abdul-qadirdeveloper/mailroom, branch `main`. The laptop folder tracks `origin/main`.
