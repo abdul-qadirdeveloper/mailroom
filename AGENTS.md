@@ -27,11 +27,11 @@ Current state: step 1 is done. `uv run mailroom.py subscribers` prints the total
 
 ## How I learn
 
-- I am new to Python. I have completed up to **13.9** of https://agentfactory.panaversity.org/building-ai-workers/programming-fundamentals/ (update this number as I move on).
+- I am new to Python. I have completed up to **13.10** of https://agentfactory.panaversity.org/building-ai-workers/programming-fundamentals/ (update this number as I move on).
 - Write only with what I have learned. If something new would really help, stop and tell me its name in one line. I decide.
 - When the code uses something new, show me that piece first and ask me to predict what it does. Stay quiet while I guess. Then run it. Explain a line only when I ask.
 
-### What I have learned (lessons 13.1 to 13.9)
+### What I have learned (lessons 13.1 to 13.10)
 
 - 13.1: values, strings, lists with positions from 0, variables, `print`, predicting before running.
 - 13.2: the workbench: tests, the type checker (Pyright, strict mode), linters (ruff), `uv run python file.py`, `uv run pyright`; Git basics (status, diff, log, add, commit, switch -c).
@@ -42,10 +42,11 @@ Current state: step 1 is done. `uv run mailroom.py subscribers` prints the total
 - 13.7: lists and dictionaries (`dict[str, str]`), keys and values, records, `KeyError`, `.get(key, default)`, `IndexError`, `sorted()` with `key=` and `reverse=True`, CSV rows as records.
 - 13.8: text from a file: splitting text into lines with `split("\n")` and into values with `split(",")`, then indexing like `parts[2]`; line endings (`\n`, and the hidden `\r` Windows adds); a leftover `\r` breaks matches (`"open\r"` is not `"open"`); `strip()` to clean both ends; values read from a file are still text. Recognize only (not taught in depth): `Path("...").read_text(encoding="utf-8")` to read a whole file into a string.
 - 13.9: dates: comparing dates as ISO text (`YYYY-MM-DD`) and why other formats like `3/10/2027` compare wrongly; `date` (a calendar day) versus `datetime` (a moment that can shift with time zones); `from datetime import date, timedelta`; `date.fromisoformat("2027-01-25")`; adding days with `date + timedelta(days=45)`; month-end, year-end and leap-year rollover; doing date math with calendar days or UTC, not local time.
+- 13.10: reading an error: a Python traceback is read from the bottom up; the last line is the error kind (a word ending in `Error`) and its message, the failing line is just above it with `line N` and a row of `^` under the failing part, and the oldest call is at the top; skip `<frozen runpy>` lines; examples `KeyError: 'terms'` and `IndexError`; telling the line that made a bad value from the line it was handed to. Recognize only (not taught in depth): Node/TypeScript stack traces (`at` lines, `node:internal` frames, `throw new Error(...)`).
 
 Also met in this project (step 1, subscriber counts): `from mailroom import ...` to use functions from another file, and `sys.argv` for the words typed after the command. Dates step: `date - timedelta(...)`, `date.today()` (command line only), `.month` and `.weekday()` (0 is Monday).
 
-Not learned yet, so each one is "something new": `pathlib` / `Path` / `read_text` beyond recognizing the one line, `open()` and `with`, the `csv` module, `try` / `except` (13.10), named test functions and pytest (13.11), `-> None`, `break` / `continue`, default parameter values, docstrings, classes and objects, dataclasses. The starter code already uses `-> None`, `import` and a pytest test function; treat them as new the first time they matter.
+Not learned yet, so each one is "something new": `pathlib` / `Path` / `read_text` beyond recognizing the one line, `open()` and `with`, the `csv` module, `try` / `except` and `raise` (13.10 only reads errors, it does not handle them), named test functions and pytest (13.11), `-> None`, `break` / `continue`, default parameter values, docstrings, classes and objects, dataclasses. The starter code already uses `-> None`, `import` and a pytest test function; treat them as new the first time they matter.
 
 ## Commands
 
