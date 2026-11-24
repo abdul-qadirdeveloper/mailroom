@@ -23,6 +23,7 @@ Current state: step 1 is done. `uv run mailroom subscribers` prints the total an
 - Keep changes scoped to the current step. Don't add dependencies, frameworks, or abstractions that a later step hasn't asked for yet.
 - Make every change directly in the user's laptop folder `D:\Claude\FDE102\mailroom`.
 - Behaviors first. I give the expected answers, you write them as pytest tests (one test per behavior, in the `tests/` file for that behavior), show them failing, then write the code that makes them pass.
+- I decide the test cases and their answers. Never change an expected answer to make a test pass.
 - Never read today's date inside the logic. Pass the run date in as a parameter. Only the command line may read today's date (as the default when `--run-date` is not given).
 - When something breaks, show me the full error (the whole traceback, exactly as printed) before changing anything.
 

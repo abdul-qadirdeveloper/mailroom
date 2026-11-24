@@ -46,6 +46,19 @@ def next_send(run_date: date) -> date:
     return day
 
 
+def check_subject(issue_text: str) -> list[str]:
+    # the first line must be "Subject: ..." with 50 characters or fewer after the label
+    first_line = issue_text.split("\n")[0].strip()
+    if not first_line.startswith("Subject:"):
+        return ["Problem: no Subject line"]
+    subject = first_line.split("Subject:")[1].strip()
+    if subject == "":
+        return ["Problem: subject is empty"]
+    if len(subject) > 50:
+        return ["Problem: subject is " + str(len(subject)) + " characters, the limit is 50"]
+    return []
+
+
 def read_run_date() -> date:
     # the command line is the only place that may read today's date
     run_date = date.today()
