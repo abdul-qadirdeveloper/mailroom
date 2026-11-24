@@ -81,3 +81,14 @@ One check runs all five rules and returns every problem it finds, in rule order.
 | # | Issue | What the check should say |
 |---|-------|---------------------------|
 | 1 | issue-01, but the subject is `Your 10-minute walk plan is ready, starting today!!` (51) and the `Unsubscribe:` part is removed | `["Problem: subject is 51 characters, the limit is 50", "Problem: no Unsubscribe line"]` |
+
+## Characters a reader sees versus len()
+
+Text: `👍🏽 Thanks for joining`
+
+| What | Count | Why |
+|------|-------|-----|
+| Characters a reader sees | 20 | 👍🏽 looks like one character, then a space, then `Thanks for joining` (18) |
+| Python `len()` | 21 | 👍🏽 is two code points, thumbs up (U+1F44D) plus a skin-tone modifier (U+1F3FD), so `len()` counts it as 2 |
+
+Checked by running `len()`: it printed 21.
