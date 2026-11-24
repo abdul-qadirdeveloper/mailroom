@@ -26,4 +26,5 @@ Younger You after 40
 
 P.S. Today's step: download the app. Talk to your doctor before starting any new exercise program, especially if you have a health condition.
 
-You're getting this because you joined the YoYo40+ waitlist. YoYo40+, {{company_address}} · Unsubscribe: {{unsubscribe_url}}
+You're getting this because you joined the YoYo40+ waitlist. YoYo40+, {{company_address}} · 
+Unsubscribe: {{unsubscribe_url}}
