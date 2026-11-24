@@ -141,5 +141,17 @@ def main() -> None:
         if since_days > 0:
             print("Joined in the last", since_days, "days:", count_joined_since(text, read_run_date(), since_days))
 
-    if command != "next-send" and command != "subscribers":
+    if command == "check":
+        if len(sys.argv) < 3:
+            print("Usage: mailroom check <issue file>")
+            sys.exit(1)
+        problems = check_issue(Path(sys.argv[2]).read_text(encoding="utf-8"))
+        if problems == []:
+            print("OK")
+            sys.exit(0)
+        for problem in problems:
+            print(problem)
+        sys.exit(1)
+
+    if command != "next-send" and command != "subscribers" and command != "check":
         print("Hello from mailroom!")
