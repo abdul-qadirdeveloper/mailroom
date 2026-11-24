@@ -89,10 +89,18 @@ def check_link(issue_text: str) -> list[str]:
 
 
 def check_footer(issue_text: str) -> list[str]:
-    # some line must contain "Unsubscribe: {{unsubscribe_url}}"
-    if "Unsubscribe: {{unsubscribe_url}}" in issue_text:
-        return []
-    return ["Problem: no Unsubscribe line"]
+    # some line must start "You're getting this because",
+    # and some line must contain "Unsubscribe: {{unsubscribe_url}}"
+    problems: list[str] = []
+    has_getting_line = False
+    for line in issue_text.split("\n"):
+        if line.strip().startswith("You're getting this because"):
+            has_getting_line = True
+    if not has_getting_line:
+        problems = problems + ["Problem: no \"You're getting this because\" line"]
+    if "Unsubscribe: {{unsubscribe_url}}" not in issue_text:
+        problems = problems + ["Problem: no Unsubscribe line"]
+    return problems
 
 
 def check_issue(issue_text: str) -> list[str]:
