@@ -70,6 +70,9 @@ The issue ends with a line that starts `You're getting this because` and a line 
 |---|---------------------|---------------------------|
 | 1 | issue-01 as it is now: `You're getting this because ...` on one line, then `Unsubscribe: {{unsubscribe_url}}` on the last line | fine |
 | 2 | `You're getting this because you joined the YoYo40+ waitlist.` and no `Unsubscribe:` anywhere | `Problem: no Unsubscribe line` |
+| 3 | `Unsubscribe: {{unsubscribe_url}}` is there, but no line starts `You're getting this because` | `Problem: no "You're getting this because" line` |
+| 4 | Both footer lines are missing | `["Problem: no \"You're getting this because\" line", "Problem: no Unsubscribe line"]` (footer order) |
+| 5 | `Thanks! You're getting this because you joined.` (not at the start of the line), plus the Unsubscribe line | `Problem: no "You're getting this because" line` |
 
 ### Two problems at once
 
