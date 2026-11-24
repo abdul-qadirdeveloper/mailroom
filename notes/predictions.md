@@ -9,3 +9,7 @@
 ## First Check
 
 There are 24 subscribers in total, 8 in each group.
+
+## Tests First
+
+I expect at least one test per behavior.

@@ -13,7 +13,7 @@ It grows one step at a time, and each step brings in exactly one new idea, only 
 3. Send the issue to a practice mail server.
 4. Move Mailroom into the user's existing Email Studio, where its emails are checked with code.
 
-Current state: step 1 is done. `uv run mailroom.py subscribers` prints the total and one line per group, and `uv run checks.py` checks those counts with asserts. Dates are added too: `subscribers --since-days 30` and `next-send` (first Monday of next month), both with an optional `--run-date YYYY-MM-DD`.
+Current state: step 1 is done. `uv run mailroom subscribers` prints the total and one line per group. Dates are added too: `subscribers --since-days 30` and `next-send` (first Monday of next month), both with an optional `--run-date YYYY-MM-DD`. All the code lives in `src/mailroom/__init__.py` (the old `mailroom.py` is gone). The old `checks.py` asserts are now pytest tests, one test per behavior, grouped by behavior in `tests/test_counts.py`, `tests/test_joined_since.py` and `tests/test_next_send.py`; run them with `uv run pytest`.
 
 ## Rules
 
@@ -22,17 +22,17 @@ Current state: step 1 is done. `uv run mailroom.py subscribers` prints the total
 - Commit and push after every step.
 - Keep changes scoped to the current step. Don't add dependencies, frameworks, or abstractions that a later step hasn't asked for yet.
 - Make every change directly in the user's laptop folder `D:\Claude\FDE102\mailroom`.
-- Behaviors first. I give the expected answers, you write them as checks (assert lines in `checks.py`), show them failing, then write the code that makes them pass.
+- Behaviors first. I give the expected answers, you write them as pytest tests (one test per behavior, in the `tests/` file for that behavior), show them failing, then write the code that makes them pass.
 - Never read today's date inside the logic. Pass the run date in as a parameter. Only the command line may read today's date (as the default when `--run-date` is not given).
 - When something breaks, show me the full error (the whole traceback, exactly as printed) before changing anything.
 
 ## How I learn
 
-- I am new to Python. I have completed up to **13.10** of https://agentfactory.panaversity.org/building-ai-workers/programming-fundamentals/ (update this number as I move on).
+- I am new to Python. I have completed up to **13.11** of https://agentfactory.panaversity.org/building-ai-workers/programming-fundamentals/ (update this number as I move on).
 - Write only with what I have learned. If something new would really help, stop and tell me its name in one line. I decide.
 - When the code uses something new, show me that piece first and ask me to predict what it does. Stay quiet while I guess. Then run it. Explain a line only when I ask.
 
-### What I have learned (lessons 13.1 to 13.10)
+### What I have learned (lessons 13.1 to 13.11)
 
 - 13.1: values, strings, lists with positions from 0, variables, `print`, predicting before running.
 - 13.2: the workbench: tests, the type checker (Pyright, strict mode), linters (ruff), `uv run python file.py`, `uv run pyright`; Git basics (status, diff, log, add, commit, switch -c).
@@ -44,10 +44,11 @@ Current state: step 1 is done. `uv run mailroom.py subscribers` prints the total
 - 13.8: text from a file: splitting text into lines with `split("\n")` and into values with `split(",")`, then indexing like `parts[2]`; line endings (`\n`, and the hidden `\r` Windows adds); a leftover `\r` breaks matches (`"open\r"` is not `"open"`); `strip()` to clean both ends; values read from a file are still text. Recognize only (not taught in depth): `Path("...").read_text(encoding="utf-8")` to read a whole file into a string.
 - 13.9: dates: comparing dates as ISO text (`YYYY-MM-DD`) and why other formats like `3/10/2027` compare wrongly; `date` (a calendar day) versus `datetime` (a moment that can shift with time zones); `from datetime import date, timedelta`; `date.fromisoformat("2027-01-25")`; adding days with `date + timedelta(days=45)`; month-end, year-end and leap-year rollover; doing date math with calendar days or UTC, not local time.
 - 13.10: reading an error: a Python traceback is read from the bottom up; the last line is the error kind (a word ending in `Error`) and its message, the failing line is just above it with `line N` and a row of `^` under the failing part, and the oldest call is at the top; skip `<frozen runpy>` lines; examples `KeyError: 'terms'` and `IndexError`; telling the line that made a bad value from the line it was handed to. Recognize only (not taught in depth): Node/TypeScript stack traces (`at` lines, `node:internal` frames, `throw new Error(...)`).
+- 13.11: tests first, the TDG (Test-Driven Generation) loop: I decide the cases and expected answers, the agent writes them as tests, they run and fail, the agent writes the code, they run again and pass; tests as the specification, one required behavior per test; a new test must fail for the right reason (the code is missing, not a typo in the test); I own every expected value and read every test against my list; the agent never edits tests to make them pass (check with `git diff <commit> -- tests/` showing nothing); commit the failing tests first so history shows tests came before code; passing is evidence for the chosen inputs, not proof, so pick cases like a month end, a year end, a leap day and an input that must fail. Recognize only (not taught in depth): pytest as the test runner, named tests, `with pytest.raises(...)` to check a call raises an error, TypeScript `test("name", () => {...})` and `assert.equal` / `assert.throws`.
 
-Also met in this project (step 1, subscriber counts): `from mailroom import ...` to use functions from another file, and `sys.argv` for the words typed after the command. Dates step: `date - timedelta(...)`, `date.today()` (command line only), `.month` and `.weekday()` (0 is Monday).
+Also met in this project (step 1, subscriber counts): `from mailroom import ...` to use functions from another file, and `sys.argv` for the words typed after the command. Dates step: `date - timedelta(...)`, `date.today()` (command line only), `.month` and `.weekday()` (0 is Monday). Tests step: plain pytest test functions (`def test_...() -> None:` holding an `assert`), run with `uv run pytest`.
 
-Not learned yet, so each one is "something new": `pathlib` / `Path` / `read_text` beyond recognizing the one line, `open()` and `with`, the `csv` module, `try` / `except` and `raise` (13.10 only reads errors, it does not handle them), named test functions and pytest (13.11), `-> None`, `break` / `continue`, default parameter values, docstrings, classes and objects, dataclasses. The starter code already uses `-> None`, `import` and a pytest test function; treat them as new the first time they matter.
+Not learned yet, so each one is "something new": `pathlib` / `Path` / `read_text` beyond recognizing the one line, `open()` and `with`, the `csv` module, `try` / `except` and `raise` (13.10 only reads errors and 13.11 only shows `pytest.raises`; neither teaches handling or raising them), `pytest.raises` beyond recognizing it (13.11 only shows it), `-> None` beyond test functions and `main`, `break` / `continue`, default parameter values, docstrings, classes and objects, dataclasses. The starter code already uses `-> None`, `import` and a pytest test function; treat them as new the first time they matter.
 
 ## Commands
 
@@ -55,7 +56,8 @@ The project uses [uv](https://docs.astral.sh/uv/) and Python 3.14 (pinned in `.p
 
 ```bash
 uv sync                                   # create .venv and install dependencies
-uv run mailroom                           # run the CLI (entry point: mailroom:main)
+uv run mailroom subscribers               # run the CLI (entry point: mailroom:main)
+uv run mailroom next-send --run-date 2026-11-20
 uv run pytest                             # run all tests
 uv run pytest tests/test_main.py::test_main_prints_greeting   # run one test
 uv add <pkg>                              # add a runtime dependency
