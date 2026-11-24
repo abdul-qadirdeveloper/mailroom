@@ -59,6 +59,53 @@ def check_subject(issue_text: str) -> list[str]:
     return []
 
 
+def check_preview(issue_text: str) -> list[str]:
+    # the second line must be "Preview: ..." with 90 characters or fewer after the label
+    lines = issue_text.split("\n")
+    if len(lines) < 2 or not lines[1].strip().startswith("Preview:"):
+        return ["Problem: no Preview line"]
+    preview = lines[1].strip().split("Preview:")[1].strip()
+    if len(preview) > 90:
+        return ["Problem: preview is " + str(len(preview)) + " characters, the limit is 90"]
+    return []
+
+
+def check_greeting(issue_text: str) -> list[str]:
+    # the reader must be greeted with {{first_name}}
+    if "{{first_name}}" in issue_text:
+        return []
+    return ["Problem: no {{first_name}} greeting"]
+
+
+def check_link(issue_text: str) -> list[str]:
+    # there must be exactly one link written as [Button text](https://...)
+    links = 0
+    for line in issue_text.split("\n"):
+        if "](https://" in line:
+            links = links + 1
+    if links != 1:
+        return ["Problem: found " + str(links) + " links, need exactly 1"]
+    return []
+
+
+def check_footer(issue_text: str) -> list[str]:
+    # some line must contain "Unsubscribe: {{unsubscribe_url}}"
+    if "Unsubscribe: {{unsubscribe_url}}" in issue_text:
+        return []
+    return ["Problem: no Unsubscribe line"]
+
+
+def check_issue(issue_text: str) -> list[str]:
+    # run every rule, in rule order, and keep every problem
+    return (
+        check_subject(issue_text)
+        + check_preview(issue_text)
+        + check_greeting(issue_text)
+        + check_link(issue_text)
+        + check_footer(issue_text)
+    )
+
+
 def read_run_date() -> date:
     # the command line is the only place that may read today's date
     run_date = date.today()
