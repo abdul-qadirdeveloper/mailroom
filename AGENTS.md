@@ -15,6 +15,8 @@ It grows one step at a time, and each step brings in exactly one new idea, only 
 
 Current state: step 1 is done. `uv run mailroom subscribers` prints the total and one line per group. Dates are added too: `subscribers --since-days 30` and `next-send` (first Monday of next month), both with an optional `--run-date YYYY-MM-DD`. All the code lives in `src/mailroom/__init__.py` (the old `mailroom.py` is gone). The old `checks.py` asserts are now pytest tests, one test per behavior, grouped by behavior in `tests/test_counts.py`, `tests/test_joined_since.py` and `tests/test_next_send.py`; run them with `uv run pytest`.
 
+Step 2 is done too: `uv run mailroom check <issue file>` checks an issue against the five rules in `docs/email-rules.md` (`check_subject`, `check_preview`, `check_greeting`, `check_link` and `check_footer`, all run in rule order by `check_issue`). It prints every problem on its own line and exits 1, or prints `OK` and exits 0. Each check returns a list of problem messages, `[]` when the issue is fine. The cases live in `notes/predictions.md` and the tests in `tests/test_check_*.py`.
+
 ## Rules
 
 - Use uv for everything: running, testing, adding packages. Never call `python`, `pip` or `pytest` directly.
@@ -47,7 +49,7 @@ Current state: step 1 is done. `uv run mailroom subscribers` prints the total an
 - 13.10: reading an error: a Python traceback is read from the bottom up; the last line is the error kind (a word ending in `Error`) and its message, the failing line is just above it with `line N` and a row of `^` under the failing part, and the oldest call is at the top; skip `<frozen runpy>` lines; examples `KeyError: 'terms'` and `IndexError`; telling the line that made a bad value from the line it was handed to. Recognize only (not taught in depth): Node/TypeScript stack traces (`at` lines, `node:internal` frames, `throw new Error(...)`).
 - 13.11: tests first, the TDG (Test-Driven Generation) loop: I decide the cases and expected answers, the agent writes them as tests, they run and fail, the agent writes the code, they run again and pass; tests as the specification, one required behavior per test; a new test must fail for the right reason (the code is missing, not a typo in the test); I own every expected value and read every test against my list; the agent never edits tests to make them pass (check with `git diff <commit> -- tests/` showing nothing); commit the failing tests first so history shows tests came before code; passing is evidence for the chosen inputs, not proof, so pick cases like a month end, a year end, a leap day and an input that must fail. Recognize only (not taught in depth): pytest as the test runner, named tests, `with pytest.raises(...)` to check a call raises an error, TypeScript `test("name", () => {...})` and `assert.equal` / `assert.throws`.
 
-Also met in this project (step 1, subscriber counts): `from mailroom import ...` to use functions from another file, and `sys.argv` for the words typed after the command. Dates step: `date - timedelta(...)`, `date.today()` (command line only), `.month` and `.weekday()` (0 is Monday). Tests step: plain pytest test functions (`def test_...() -> None:` holding an `assert`), run with `uv run pytest`.
+Also met in this project (step 1, subscriber counts): `from mailroom import ...` to use functions from another file, and `sys.argv` for the words typed after the command. Dates step: `date - timedelta(...)`, `date.today()` (command line only), `.month` and `.weekday()` (0 is Monday). Tests step: plain pytest test functions (`def test_...() -> None:` holding an `assert`), run with `uv run pytest`. Issue-check step: `"text" in other_text` to find text inside text, `+` to join two lists, and `sys.exit(0)` / `sys.exit(1)` to set the exit code (the program stops on that line).
 
 Not learned yet, so each one is "something new": `pathlib` / `Path` / `read_text` beyond recognizing the one line, `open()` and `with`, the `csv` module, `try` / `except` and `raise` (13.10 only reads errors and 13.11 only shows `pytest.raises`; neither teaches handling or raising them), `pytest.raises` beyond recognizing it (13.11 only shows it), `-> None` beyond test functions and `main`, `break` / `continue`, default parameter values, docstrings, classes and objects, dataclasses. The starter code already uses `-> None`, `import` and a pytest test function; treat them as new the first time they matter.
 
@@ -59,6 +61,7 @@ The project uses [uv](https://docs.astral.sh/uv/) and Python 3.14 (pinned in `.p
 uv sync                                   # create .venv and install dependencies
 uv run mailroom subscribers               # run the CLI (entry point: mailroom:main)
 uv run mailroom next-send --run-date 2026-11-20
+uv run mailroom check issues/issue-01.md  # prints OK (exit 0) or each problem (exit 1)
 uv run pytest                             # run all tests
 uv run pytest tests/test_main.py::test_main_prints_greeting   # run one test
 uv add <pkg>                              # add a runtime dependency
