@@ -13,7 +13,7 @@ It grows one step at a time, and each step brings in exactly one new idea, only 
 3. Send the issue to a practice mail server.
 4. Move Mailroom into the user's existing Email Studio, where its emails are checked with code.
 
-Current state: step 1 is done. `uv run mailroom subscribers` prints the total and one line per group. Dates are added too: `subscribers --since-days 30` and `next-send` (first Monday of next month), both with an optional `--run-date YYYY-MM-DD`. All the code lives in `src/mailroom/__init__.py` (the old `mailroom.py` is gone). The old `checks.py` asserts are now pytest tests, one test per behavior, grouped by behavior in `tests/test_counts.py`, `tests/test_joined_since.py` and `tests/test_next_send.py`; run them with `uv run pytest`.
+Current state: step 1 is done. `uv run mailroom subscribers` prints the total and one line per group. Dates are added too: `subscribers --since-days 30` and `next-send` (first Monday of next month), both with an optional `--run-date YYYY-MM-DD`. The code is a package in `src/mailroom/`, one module per job (see Layout). The old `checks.py` asserts are now pytest tests, one test per behavior, grouped by behavior in `tests/test_counts.py`, `tests/test_joined_since.py` and `tests/test_next_send.py`; run them with `uv run pytest`.
 
 Step 2 is done too: `uv run mailroom check <issue file>` checks an issue against the five rules in `docs/email-rules.md` (`check_subject`, `check_preview`, `check_greeting`, `check_link` and `check_footer`, all run in rule order by `check_issue`). It prints every problem on its own line and exits 1, or prints `OK` and exits 0. Each check returns a list of problem messages, `[]` when the issue is fine. Length means what Python's `len()` counts (code points), not what a reader sees: `👍🏽 Thanks for joining` is 21, not 20, because 👍🏽 is a thumbs up plus a skin-tone modifier (my decision, proved by `test_emoji_with_skin_tone_counts_as_two_characters`). The cases live in `notes/predictions.md` and the tests in `tests/test_check_*.py`.
 
@@ -27,6 +27,8 @@ Step 2 is done too: `uv run mailroom check <issue file>` checks an issue against
 - Behaviors first. I give the expected answers, you write them as pytest tests (one test per behavior, in the `tests/` file for that behavior), show them failing, then write the code that makes them pass.
 - I decide the test cases and their answers. Never change an expected answer to make a test pass.
 - Never read today's date inside the logic. Pass the run date in as a parameter. Only the command line may read today's date (as the default when `--run-date` is not given).
+- One module per job. A new function goes in the module whose job it belongs to; a new job gets its own module.
+- Only the commands module (`commands.py`) prints. Every other module returns values and never calls `print`.
 - When something breaks, show me the full error (the whole traceback, exactly as printed) before changing anything.
 
 ## How I learn
@@ -61,7 +63,7 @@ The project uses [uv](https://docs.astral.sh/uv/) and Python 3.14 (pinned in `.p
 
 ```bash
 uv sync                                   # create .venv and install dependencies
-uv run mailroom subscribers               # run the CLI (entry point: mailroom:main)
+uv run mailroom subscribers               # run the CLI (entry point: mailroom.commands:main)
 uv run mailroom next-send --run-date 2026-11-20
 uv run mailroom check issues/issue-01.md  # prints OK (exit 0) or each problem (exit 1)
 uv run pytest                             # run all tests
@@ -74,8 +76,15 @@ No type checker, linter or formatter is configured yet.
 
 ## Layout
 
-- `src/mailroom/` is the package (src layout, built with `uv_build`). The `mailroom` console script in `pyproject.toml` points at `mailroom:main` in `__init__.py`.
-- `tests/` holds pytest tests. pytest is the only dev dependency.
+- `src/mailroom/` is the package (src layout, built with `uv_build`), one module per job:
+  - `subscribers.py`: reading and counting subscribers (`GROUPS`, `read_subscribers`, `count_total`, `count_in_group`, `count_joined_since`).
+  - `dates.py`: the next send date (`next_send`).
+  - `issue.py`: reading an issue file (`read_issue`).
+  - `checks.py`: the five rules (`check_subject`, `check_preview`, `check_greeting`, `check_link`, `check_footer`) and `check_issue`.
+  - `commands.py`: the command line (`main`, `read_run_date`). The only module that prints or reads `sys.argv` and today's date.
+  - `__init__.py`: only a comment listing the modules.
+- The `mailroom` console script in `pyproject.toml` points at `mailroom.commands:main`.
+- `tests/` holds pytest tests. They import from the module that holds the function, like `from mailroom.checks import check_subject`. pytest is the only dev dependency.
 - `uv.lock` is committed; update it through `uv add` / `uv sync`, not by hand.
 - `.venv` is not shared between machines; run `uv sync` to create it.
 

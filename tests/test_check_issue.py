@@ -1,4 +1,4 @@
-from mailroom import check_issue
+from mailroom.checks import check_issue
 
 # check_issue runs all five rules and returns every problem, in rule order.
 

@@ -1,4 +1,4 @@
-from mailroom import check_greeting
+from mailroom.checks import check_greeting
 
 # Rule 3: the issue greets the reader with {{first_name}} (two braces on each side).
 # check_greeting returns a list of problems, empty when the greeting is fine.

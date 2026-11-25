@@ -1,4 +1,4 @@
-from mailroom import read_subscribers, count_total, count_in_group
+from mailroom.subscribers import read_subscribers, count_total, count_in_group
 
 # My expected answers (from notes/predictions.md, First Check)
 

@@ -1,6 +1,6 @@
 from datetime import date
 
-from mailroom import read_subscribers, count_joined_since
+from mailroom.subscribers import read_subscribers, count_joined_since
 
 
 # Joined in the last 30 days, run on 2026-11-20: cutoff is 2026-10-21, counted inclusive

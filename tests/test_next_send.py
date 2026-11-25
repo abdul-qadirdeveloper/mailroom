@@ -1,6 +1,6 @@
 from datetime import date
 
-from mailroom import next_send
+from mailroom.dates import next_send
 
 # Next send is the first Monday of the next month
 

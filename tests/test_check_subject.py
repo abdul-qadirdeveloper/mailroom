@@ -1,4 +1,4 @@
-from mailroom import check_subject
+from mailroom.checks import check_subject
 
 # Rule 1: an issue starts with a line "Subject: ..." of 50 characters or fewer.
 # Only the text after "Subject: " is counted.

@@ -1,4 +1,4 @@
-from mailroom import check_footer
+from mailroom.checks import check_footer
 
 # Rule 5: the issue ends with a line that starts "You're getting this because"
 # and a line that contains "Unsubscribe: {{unsubscribe_url}}".

@@ -92,3 +92,63 @@ Text: `👍🏽 Thanks for joining`
 | Python `len()` | 21 | 👍🏽 is two code points, thumbs up (U+1F44D) plus a skin-tone modifier (U+1F3FD), so `len()` counts it as 2 |
 
 Checked by running `len()`: it printed 21.
+
+## Moving the code into modules (prediction, nothing moved yet)
+
+All the code is in one file, `src/mailroom/__init__.py` (165 lines). The checks sit at the bottom, after the counting and the dates.
+
+### The move I am predicting for (my plan to confirm)
+
+One file per job, inside `src/mailroom/`:
+
+| New module | What moves into it |
+|------------|--------------------|
+| `subscribers.py` | `read_subscribers`, `count_total`, `count_in_group`, `count_joined_since` |
+| `dates.py` | `next_send` |
+| `checks.py` | `check_subject`, `check_preview`, `check_greeting`, `check_link`, `check_footer`, `check_issue` |
+| `__init__.py` (stays) | `main`, `read_run_date`, `GROUPS` (the entry point `mailroom:main` in `pyproject.toml` points here) |
+
+### What every test file depends on
+
+Every test file starts with `from mailroom import <name>`. That line looks for the name at the top level of `src/mailroom/__init__.py`. It does not look inside `checks.py` or the other new files. If the name is not at the top level of `__init__.py`, the test file cannot even load.
+
+There are 27 tests in 10 files.
+
+### Prediction
+
+`main` still needs some of the moved functions, so `__init__.py` has to import them back from the new files. Any name `__init__.py` imports sits at its top level again, so `from mailroom import ...` finds it. What breaks depends on which names `main` uses:
+
+| Test file | Imports | Used by `main`? | Breaks? |
+|-----------|---------|-----------------|---------|
+| `test_counts.py` (4) | `read_subscribers`, `count_total`, `count_in_group` | yes | no |
+| `test_joined_since.py` (1) | `read_subscribers`, `count_joined_since` | yes | no |
+| `test_next_send.py` (2) | `next_send` | yes | no |
+| `test_check_issue.py` (1) | `check_issue` | yes | no |
+| `test_main.py` (1) | `main` | stays in `__init__.py` | no |
+| `test_check_subject.py` (7) | `check_subject` | no, only `check_issue` calls it | **yes** |
+| `test_check_preview.py` (2) | `check_preview` | no | **yes** |
+| `test_check_greeting.py` (2) | `check_greeting` | no | **yes** |
+| `test_check_link.py` (2) | `check_link` | no | **yes** |
+| `test_check_footer.py` (5) | `check_footer` | no | **yes** |
+
+**Five files break, holding 18 tests.** They break because their import line cannot find the name, not because a check gives a wrong answer. The error is an `ImportError` (cannot import name `check_subject` from `mailroom`).
+
+How it will look: pytest loads every test file before it runs any test. When a file cannot load, pytest stops with `Interrupted: 5 errors during collection`. So **none of the 27 tests run**, not even the 9 that would pass.
+
+### What will not break, and why
+
+- **Reading `data/subscribers.csv`.** `read_subscribers` uses the path `data/subscribers.csv`. That path starts from the folder you run the command in (the project folder), not from where the `.py` file sits. Moving the function to `subscribers.py` does not change it.
+- **Any expected answer.** Moving code changes where a function lives, not what it returns.
+
+### A break the tests will not catch
+
+`test_main.py` runs `main()` without a command, so it only reaches the `Hello from mailroom!` line. If `__init__.py` forgets to import, say, `check_issue`, every test still passes. The error (`NameError: name 'check_issue' is not defined`) shows up only when someone runs `uv run mailroom check issues/issue-01.md`. After the move, run all three commands by hand too.
+
+### Two ways to fix the 18, my choice
+
+1. Change the import line in the five test files to `from mailroom.checks import check_subject` (and so on). This edits tests, but only the import line, not any expected answer.
+2. Leave the tests alone and also import the five single checks in `__init__.py`, even though `main` does not use them.
+
+### What happened
+
+The move I chose was different: `main` went into its own `commands.py` too, and `__init__.py` kept only a comment. So nothing was left at the top level of `__init__.py`, and **all 10 files** failed with `ImportError` (`Interrupted: 10 errors during collection`), not 5. The reason was the one predicted: the import line, not a wrong answer. I used fix 1 (only the import lines changed), and all 27 passed.

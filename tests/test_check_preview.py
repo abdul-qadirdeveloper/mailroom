@@ -1,4 +1,4 @@
-from mailroom import check_preview
+from mailroom.checks import check_preview
 
 # Rule 2: the second line is "Preview: ..." of 90 characters or fewer.
 # Only the text after "Preview: " is counted.

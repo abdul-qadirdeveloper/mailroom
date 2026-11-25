@@ -1,4 +1,4 @@
-from mailroom import check_link
+from mailroom.checks import check_link
 
 # Rule 4: exactly one main link, written as [Button text](https://...).
 # check_link returns a list of problems, empty when there is exactly one link.
